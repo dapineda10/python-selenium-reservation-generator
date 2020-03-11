@@ -4,6 +4,7 @@ from Pages.CarsDetailsPage import CarsDetailsPage
 from Pages.ExtraPage import ExtraPage
 from Pages.PayPage import PayPage
 from db.DatabaseQueries import *
+import logging
 
 
 class ExecuteFlows:
@@ -11,14 +12,96 @@ class ExecuteFlows:
     def __init__(self, context):
         self.context = context
 
-    def create_flow(self, occupancy, code_flow):
-        """ Llama a los metodos que crean la reserva.
+    def execute_process(self, type_request, occupancy):
+        """ Ejecuta los procesos dependiendo del type_request.
 
-        :param occupancy: 1r1a1i, 1r1a1c
-        :param code_flow:
+        :param type_request: 1,2,3,4,5,6,7,8,9,10,11
+        :param occupancy:
         :return:
         """
-        self.make_flow_per_type(code_flow, occupancy)
+        if type_request in ['1', '2', '3', '4']:
+            # 1. domestic 1r1a1i, 2. domestic 1r1a1c, 3. international 1r1a1i, 4. international 1r1a1c
+            while True:
+                execution = self.execute_flows_flight(type_request, occupancy)
+                if execution:
+                    break
+                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
+                elif execution is False and self.context.repetitions == 4:
+                    print("No fue posible insertar en base de datos")
+                    logging.error('No fue posible insertar en base de datos la petición #' + type_request)
+                    break
+
+        elif type_request in ['5']:
+            # 5. domestic_package BOG-MED 1r1a
+            while True:
+                execution = self.execute_flow_domestic_package(type_request, occupancy)
+                if execution:
+                    break
+                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
+                elif execution is False and self.context.repetitions == 4:
+                    print("No fue posible insertar en base de datos")
+                    logging.error('No fue posible insertar en base de datos la petición #' + type_request)
+                    break
+
+        if type_request in ['6', '7']:
+            # 6. hotel_international, 7. hotel_international
+            while True:
+                execution = self.execute_flow_hotel_domestic_international(type_request, occupancy)
+                if execution:
+                    break
+                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
+                elif execution is False and self.context.repetitions == 4:
+                    print("No fue posible insertar en base de datos")
+                    logging.error('No fue posible insertar en base de datos la petición #' + type_request)
+                    break
+
+        elif type_request in ['8']:
+            # 8. air_auto_international 1r2a1c
+            while True:
+                execution = self.execute_flow_flight_auto(type_request, occupancy)
+                if execution:
+                    break
+                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
+                elif execution is False and self.context.repetitions == 4:
+                    print("No fue posible insertar en base de datos")
+                    logging.error('No fue posible insertar en base de datos la petición #' + type_request)
+                    break
+
+        elif type_request in ['9']:
+            # 9. international_package 1r1a_2r2a1c
+            while True:
+                execution = self.execute_flow_air_auto_international(type_request, occupancy)
+                if execution:
+                    break
+                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
+                elif execution is False and self.context.repetitions == 4:
+                    print("No fue posible insertar en base de datos")
+                    logging.error('No fue posible insertar en base de datos la petición #' + type_request)
+                    break
+
+        elif type_request in ['10']:
+            # 10. autos_international 1r1a
+            while True:
+                execution = self.execute_flow_auto(type_request, occupancy)
+                if execution:
+                    break
+                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
+                elif execution is False and self.context.repetitions == 4:
+                    print("No fue posible insertar en base de datos")
+                    logging.error('No fue posible insertar en base de datos la petición #' + type_request)
+                    break
+
+        elif type_request in ['11']:
+            # 11. extras_domestic 1r1a
+            while True:
+                execution = self.execute_flow_extras(type_request, occupancy)
+                if execution:
+                    break
+                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
+                elif execution is False and self.context.repetitions == 4:
+                    print("No fue posible insertar en base de datos")
+                    logging.error('No fue posible insertar en base de datos la petición #' + type_request)
+                    break
 
     def search_results(self, type_request):
         """Busca los resultados dependiendo de el tipo de solicitud.
@@ -100,19 +183,6 @@ class ExecuteFlows:
             self.context.repetitions = self.context.repetitions + 1
             return False
 
-    def make_flow_per_type(self, type_request, occupancy):
-        """Ejecuta los procesos dentro del flujo dependiendo del tipo de solicitud.
-
-        :param type_request: La solicitud configurada en el MainExecution.
-        :param occupancy: 1r1a1c, 1r1a1i
-        :return:
-        """
-
-        self.execute_process(type_request, occupancy)
-        """Descripción de cada solicitud
-        1. domestic 1r1a1i, 2. domestic 1r1a1c, 3. international 1r1a1i, 4. international 1r1a1c, 5. domestic_package BOG-MED 1r1a, 6. hotel_international, 
-           7. hotel_international, 8. air_auto_international 1r2a1c, 9. international_package 1r1a_2r2a1c, 10. autos_international 1r1a, 11. extras_domestic 1r1a"""
-
     def skip_additional_services(self):
         self.skip_autos()
         self.skip_extras()
@@ -137,80 +207,7 @@ class ExecuteFlows:
         else:
             print('No tiene página de extras')
 
-    def execute_process(self, type_request, occupancy):
-
-        if type_request in ['1', '2', '3', '4']:
-            while True:
-                execution = self.repeat_execution_results_passenger(type_request, occupancy)
-                if execution:
-                    break
-                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
-                elif execution is False and self.context.repetitions == 4:
-                    print("No fue posible insertar en base de datos")
-                    break
-
-        elif type_request in ['5']:
-            while True:
-                execution = self.repeat_execution_domestic_package(type_request, occupancy)
-                if execution:
-                    break
-                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
-                elif execution is False and self.context.repetitions == 4:
-                    print("No fue posible insertar en base de datos")
-                    break
-
-        if type_request in ['6', '7']:
-            while True:
-                execution = self.repeat_hotel_domestic_international(type_request, occupancy)
-                if execution:
-                    break
-                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
-                elif execution is False and self.context.repetitions == 4:
-                    print("No fue posible insertar en base de datos")
-                    break
-
-        elif type_request in ['8']:
-            while True:
-                execution = self.repeat_execution_auto_flight(type_request, occupancy)
-                if execution:
-                    break
-                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
-                elif execution is False and self.context.repetitions == 4:
-                    print("No fue posible insertar en base de datos")
-                    break
-
-        elif type_request in ['9']:
-            while True:
-                execution = self.repeat_air_auto_international(type_request, occupancy)
-                if execution:
-                    break
-                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
-                elif execution is False and self.context.repetitions == 4:
-                    print("No fue posible insertar en base de datos")
-                    break
-
-        elif type_request in ['10']:
-            while True:
-                execution = self.repeat_execution_car(type_request, occupancy)
-                if execution:
-                    break
-                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
-                elif execution is False and self.context.repetitions == 4:
-                    print("No fue posible insertar en base de datos")
-                    break
-
-        elif type_request in ['11']:
-            # 11 - extras_domestic 1r1a
-            while True:
-                execution = self.repeat_execution_extras(type_request, occupancy)
-                if execution:
-                    break
-                # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
-                elif execution is False and self.context.repetitions == 4:
-                    print("No fue posible insertar en base de datos")
-                    break
-
-    def repeat_execution_results_passenger(self, type_request, occupancy):
+    def execute_flows_flight(self, type_request, occupancy):
         passenger_page = PassengerPage(self.context)
         result_page = ResultPage(self.context)
 
@@ -228,7 +225,7 @@ class ExecuteFlows:
                 elif status_insert is False:
                     return False
 
-    def repeat_air_auto_international(self, type_request, occupancy):
+    def execute_flow_air_auto_international(self, type_request, occupancy):
         result_page = ResultPage(self.context)
         passenger_page = PassengerPage(self.context)
 
@@ -250,7 +247,7 @@ class ExecuteFlows:
                     print("No fue posible registrar pasajeros")
                     return False
 
-    def repeat_execution_car(self, type_request, occupancy):
+    def execute_flow_auto(self, type_request, occupancy):
         result_page = ResultPage(self.context)
         passenger_page = PassengerPage(self.context)
 
@@ -273,7 +270,7 @@ class ExecuteFlows:
                     print("No fue posible registrar pasajeros")
                     return False
 
-    def repeat_execution_extras(self, type_request, occupancy):
+    def execute_flow_extras(self, type_request, occupancy):
         passenger_page = PassengerPage(self.context)
         result_page = ResultPage(self.context)
         extra_page = ExtraPage(self.context)
@@ -298,7 +295,7 @@ class ExecuteFlows:
                     print("No fue posible registrar pasajeros")
                     return False
 
-    def repeat_execution_auto_flight(self, type_request, occupancy):
+    def execute_flow_flight_auto(self, type_request, occupancy):
         result_page = ResultPage(self.context)
         passenger_page = PassengerPage(self.context)
         car_details_page = CarsDetailsPage(self.context)
@@ -323,7 +320,7 @@ class ExecuteFlows:
                     print("No fue posible registrar pasajeros")
                     return False
 
-    def repeat_hotel_domestic_international(self, type_request, occupancy):
+    def execute_flow_hotel_domestic_international(self, type_request, occupancy):
         result_page = ResultPage(self.context)
         passenger_page = PassengerPage(self.context)
 
@@ -344,7 +341,7 @@ class ExecuteFlows:
                     print("No fue posible registrar pasajeros")
                     return False
 
-    def repeat_execution_domestic_package(self, type_request, occupancy):
+    def execute_flow_domestic_package(self, type_request, occupancy):
         result_page = ResultPage(self.context)
         passenger_page = PassengerPage(self.context)
 

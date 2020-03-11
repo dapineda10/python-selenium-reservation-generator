@@ -28,19 +28,19 @@
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\usuario\PycharmProjects\Headless" />
-      <recent name="C:\Users\usuario\PycharmProjects\Headless\Pages" />
-      <recent name="C:\Users\usuario\PycharmProjects\Headless\steps" />
-      <recent name="C:\Users\usuario\PycharmProjects\Headless\Headless\Flows" />
-      <recent name="C:\Users\usuario\PycharmProjects\Headless\Headless\Flows\Air" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\usuario\PycharmProjects\Headless\db" />
       <recent name="C:\Users\usuario\PycharmProjects\Headless\Extensions" />
       <recent name="C:\Users\usuario\PycharmProjects\Headless\Mockaroo" />
       <recent name="C:\Users\usuario\PycharmProjects\Headless\Pages" />
       <recent name="C:\Users\usuario\PycharmProjects\Headless\steps" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\usuario\PycharmProjects\Headless\Steps" />
+      <recent name="C:\Users\usuario\PycharmProjects\Headless" />
+      <recent name="C:\Users\usuario\PycharmProjects\Headless\Pages" />
+      <recent name="C:\Users\usuario\PycharmProjects\Headless\steps" />
+      <recent name="C:\Users\usuario\PycharmProjects\Headless\Headless\Flows" />
     </key>
   </component>
   <component name="RunDashboard">

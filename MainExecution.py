@@ -1,18 +1,20 @@
 from selenium import webdriver
-
-from ExecuteFlows import ExecuteFlows
+from Steps.ExecuteFlows import ExecuteFlows
 import sys
+import logging
 
 
 class MainExecution:
 
     def __init__(self):
-        """options = webdriver.ChromeOptions()
+        options = webdriver.ChromeOptions()
         options.add_argument("--headless")
         options.add_argument("--log-level=3")
-        self.context = webdriver.Chrome(executable_path=r'C:\chromedriver_win32\chromedriver.exe', options=options)"""
-        self.context = webdriver.Chrome(executable_path=r'C:\chromedriver_win32\chromedriver.exe')
+        self.context = webdriver.Chrome(executable_path=r'C:\chromedriver_win32\chromedriver.exe', options=options)
+        # Descomentar para seguimiento con navegador y comentar lo de arriba
+        # self.context = webdriver.Chrome(executable_path=r'C:\chromedriver_win32\chromedriver.exe')
         self.context.repetitions = 0
+        logging.basicConfig(filename='flaska.log', level=logging.ERROR)
 
     def choose_flow(self, code_flow, processes_quantity, occup):
         """
@@ -27,7 +29,7 @@ class MainExecution:
         count = 0
         while count < processes_quantity:
             domestic_flow = ExecuteFlows(self.context)
-            domestic_flow.create_flow(occup, code_flow)
+            domestic_flow.execute_process(code_flow, occup)
             count = count + 1
 
         self.context.quit()
@@ -36,14 +38,15 @@ class MainExecution:
 
 if __name__ == '__main__':
     main_execution = MainExecution()
-    """type_request = sys.argv[1]
+    type_request = sys.argv[1]
     print("tipo de solicitud = " + type_request)
     repetitions = sys.argv[2]
     print("repeticiones = " + repetitions)
     occupancy = sys.argv[3]
     print("ocupación = " + occupancy)
-    main_execution.choose_flow(str(type_request), int(repetitions), str(occupancy))"""
-    main_execution.choose_flow('4', 1, '1r1a1i')
+    main_execution.choose_flow(str(type_request), int(repetitions), str(occupancy))
+    # Descomentar para seguimiento con navegador y comentar lo de arriba
+    # main_execution.choose_flow('4', 1, '1r1a1i')
 
     # python3 MainExecution.py 1 2 1r1a1i
     # python3 MainExecution.py 2 2 1r1a1c
