@@ -163,8 +163,9 @@ class ExecuteFlows:
         # 10 autos_international
         elif type_request == '10':
             self.context.get(
-                "https://testing.netactica.net/es-CO/Car/BOG/{}/1000/BOG/{}/1000/NA/NA/NA/autom#car".format(
+                "https://testing.netactica.net/es-CO/Car/MIA/{}/1000/MIA/{}/1000/NA/NA/NA/autom#car".format(
                     initial_date, final_date))
+        # 11 extras nacional
         elif type_request == '11':
             self.context.get(
                 "https://testing.netactica.net/es-CO/Extras/BOG/NA/{}/{}/autom#extra".format(
@@ -263,17 +264,20 @@ class ExecuteFlows:
     def execute_flow_auto(self, type_request, occupancy):
         result_page = ResultPage(self.context)
         passenger_page = PassengerPage(self.context)
+        status_copy_driver = False
+        status = False
 
         while self.context.repetitions <= 4:
             print("Repite" + str(self.context.repetitions))
             self.search_results(type_request)
-            result_page.select_auto(self.context.repetitions)
-            result_page.rent_car()
-            self.skip_extras()
-            status = passenger_page.fill_driver_information()
-            status_copy_driver = passenger_page.fill_driver()
+            auto_status = result_page.select_auto(self.context.repetitions)
+            if auto_status:
+                result_page.rent_car()
+                self.skip_extras()
+                status = passenger_page.fill_driver_information()
+                status_copy_driver = passenger_page.fill_driver()
 
-            if status and status_copy_driver:
+            if status and status_copy_driver and auto_status:
                 status_insert = self.insert_in_database(type_request, occupancy)
                 if status_insert:
                     return True

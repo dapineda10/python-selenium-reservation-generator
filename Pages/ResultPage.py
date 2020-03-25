@@ -39,17 +39,24 @@ class ResultPage:
             WebDriverWait(self.context, 50).until(
                 EC.visibility_of_all_elements_located(self.RESULTPAGE_HOTEL_OPTION))
             extensions.ExecuteJs(self.context, "selectHotel('Hot_{}');".format(str(hotel)))
+            return True
         except:
             self.context.repetitions = self.context.repetitions + 1
             logging.error("No hay hoteles en la página de resultados, el código de flujo es:" + self.context.code_flow)
             return False
 
     def select_auto(self, car):
-        extensions = WebDriverExtensions()
-        WebDriverWait(self.context, 50).until(
-            EC.visibility_of_all_elements_located(self.RESULTPAGE_CAR_OPTION))
-        extensions.ExecuteJs(self.context,
-                             "VehicleController.selectCarOption('Car_{}', 1, 503752, '/');".format(str(car)))
+        try:
+            extensions = WebDriverExtensions()
+            WebDriverWait(self.context, 50).until(
+                EC.visibility_of_all_elements_located(self.RESULTPAGE_CAR_OPTION))
+            extensions.ExecuteJs(self.context,
+                                 "VehicleController.selectCarOption('Car_{}', 1, 503752, '/');".format(str(car)))
+            return True
+        except:
+            self.context.repetitions = self.context.repetitions + 1
+            logging.error("No hay autos disponibles en la página de resultados, el código de flujo es:" + self.context.code_flow)
+            return False
 
     def select_extra(self):
         if self.IsAvailabilityMessageInPage() is False:
