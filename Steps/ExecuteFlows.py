@@ -26,7 +26,7 @@ class ExecuteFlows:
                 if execution:
                     break
                 # Si sólo pasó página de pasajeros debe repetir el flujo hasta que sean minimo 4 intentos
-                elif execution is False and self.context.repetitions == 4:
+                elif execution is False and self.context.repetitions >= 4:
                     print("No fue posible insertar en base de datos")
                     logging.error('No fue posible insertar en base de datos la petición #' + type_request)
                     break
@@ -210,33 +210,46 @@ class ExecuteFlows:
     def execute_flows_flight(self, type_request, occupancy):
         passenger_page = PassengerPage(self.context)
         result_page = ResultPage(self.context)
+        status = False
 
         while self.context.repetitions <= 4:
+            print("Repite" + str(self.context.repetitions))
             self.search_results(type_request)
-            result_page.select_flight(self.context.repetitions)
-            self.skip_additional_services()
-            status = passenger_page.fill_passenger_information(occupancy)
+            result_status = result_page.select_flight(self.context.repetitions)
+            if result_status:
+                self.skip_additional_services()
+                status = passenger_page.fill_passenger_information(occupancy)
 
             # Si status es verdadero, osea, que el mensaje de precios es correcto
-            if status:
+            if status and result_status:
                 status_insert = self.insert_in_database(type_request, occupancy)
                 if status_insert:
                     return True
                 elif status_insert is False:
                     return False
+            else:
+                if self.context.repetitions == 4:
+                    print("No fue posible registrar pasajeros")
+                    return False
 
     def execute_flow_air_auto_international(self, type_request, occupancy):
         result_page = ResultPage(self.context)
         passenger_page = PassengerPage(self.context)
+        status = False
+        hotel_status = False
 
         while self.context.repetitions <= 4:
+            print("Repite" + str(self.context.repetitions))
             self.search_results(type_request)
-            result_page.select_flight(self.context.repetitions)
-            result_page.select_hotel(self.context.repetitions)
-            self.skip_additional_services()
-            status = passenger_page.fill_passenger_information(occupancy)
+            flight_status = result_page.select_flight(self.context.repetitions)
+            if flight_status:
+                hotel_status = result_page.select_hotel(self.context.repetitions)
+                if hotel_status:
+                    self.skip_additional_services()
+                    status = passenger_page.fill_passenger_information(occupancy)
+
             # Si status es verdadero, osea, que el mensaje de precios es correcto
-            if status:
+            if status and flight_status and hotel_status:
                 status_insert = self.insert_in_database(type_request, occupancy)
                 if status_insert:
                     return True
@@ -252,6 +265,7 @@ class ExecuteFlows:
         passenger_page = PassengerPage(self.context)
 
         while self.context.repetitions <= 4:
+            print("Repite" + str(self.context.repetitions))
             self.search_results(type_request)
             result_page.select_auto(self.context.repetitions)
             result_page.rent_car()
@@ -274,15 +288,18 @@ class ExecuteFlows:
         passenger_page = PassengerPage(self.context)
         result_page = ResultPage(self.context)
         extra_page = ExtraPage(self.context)
+        status_copy_driver = False
 
         while self.context.repetitions <= 4:
+            print("Repite" + str(self.context.repetitions))
             self.search_results(type_request)
             result_page.select_extra()
             extra_page.select_occupancy('1')
             result_page.buy_extra_now()
             result_page.buy_extra()
             status_extras = passenger_page.fill_extra_information()
-            status_copy_driver = passenger_page.fill_driver()
+            if status_extras:
+                status_copy_driver = passenger_page.fill_driver()
 
             if status_extras and status_copy_driver:
                 status_insert = self.insert_in_database(type_request, occupancy)
@@ -299,17 +316,22 @@ class ExecuteFlows:
         result_page = ResultPage(self.context)
         passenger_page = PassengerPage(self.context)
         car_details_page = CarsDetailsPage(self.context)
+        status_driver = False
+        status = False
 
         while self.context.repetitions <= 4:
+            print("Repite" + str(self.context.repetitions))
             self.search_results(type_request)
-            result_page.select_flight(self.context.repetitions)
-            result_page.select_auto(self.context.repetitions)
-            car_details_page.select_option_car()
-            self.skip_additional_services()
-            status = passenger_page.fill_passenger_information(occupancy)
-            status_driver = passenger_page.fill_driver()
 
-            if status and status_driver:
+            flight_status = result_page.select_flight(self.context.repetitions)
+            if flight_status:
+                result_page.select_auto(self.context.repetitions)
+                car_details_page.select_option_car()
+                self.skip_additional_services()
+                status = passenger_page.fill_passenger_information(occupancy)
+                status_driver = passenger_page.fill_driver()
+
+            if status and status_driver and flight_status:
                 status_insert = self.insert_in_database(type_request, occupancy)
                 if status_insert:
                     return True
@@ -323,14 +345,19 @@ class ExecuteFlows:
     def execute_flow_hotel_domestic_international(self, type_request, occupancy):
         result_page = ResultPage(self.context)
         passenger_page = PassengerPage(self.context)
+        status_passenger = False
 
         while self.context.repetitions <= 4:
+            print("Repite" + str(self.context.repetitions))
             self.search_results(type_request)
-            result_page.select_hotel(self.context.repetitions)
-            self.skip_additional_services()
-            status_passenger = passenger_page.fill_passenger_information(occupancy)
 
-            if status_passenger:
+            hotel_status = result_page.select_hotel(self.context.repetitions)
+
+            if hotel_status:
+                self.skip_additional_services()
+                status_passenger = passenger_page.fill_passenger_information(occupancy)
+
+            if status_passenger and hotel_status:
                 status_insert = self.insert_in_database(type_request, occupancy)
                 if status_insert:
                     return True
@@ -344,16 +371,23 @@ class ExecuteFlows:
     def execute_flow_domestic_package(self, type_request, occupancy):
         result_page = ResultPage(self.context)
         passenger_page = PassengerPage(self.context)
+        status = False
+        hotel_status = False
 
         while self.context.repetitions <= 4:
             print("Repite" + str(self.context.repetitions))
+
             self.search_results(type_request)
-            result_page.select_flight(self.context.repetitions)
-            result_page.select_hotel(self.context.repetitions)
-            self.skip_additional_services()
-            status = passenger_page.fill_passenger_information(occupancy)
+            fligth_status = result_page.select_flight(self.context.repetitions)
+
+            if fligth_status:
+                hotel_status = result_page.select_hotel(self.context.repetitions)
+                if hotel_status:
+                    self.skip_additional_services()
+                    status = passenger_page.fill_passenger_information(occupancy)
+
             # Si status es verdadero, osea, que el mensaje de precios es correcto
-            if status:
+            if status and fligth_status and hotel_status:
                 status_insert = self.insert_in_database(type_request, occupancy)
                 if status_insert:
                     return True

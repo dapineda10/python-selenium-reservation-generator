@@ -28,6 +28,7 @@ class MainExecution:
         self.context.code_flow = code_flow
         count = 0
         while count < processes_quantity:
+            self.context.repetitions = 0
             domestic_flow = ExecuteFlows(self.context)
             domestic_flow.execute_process(code_flow, occup)
             count = count + 1
@@ -46,7 +47,7 @@ if __name__ == '__main__':
     print("ocupación = " + occupancy)
     main_execution.choose_flow(str(type_request), int(repetitions), str(occupancy))
     # Descomentar para seguimiento con navegador y comentar lo de arriba
-    # main_execution.choose_flow('4', 1, '1r1a1i')
+    # main_execution.choose_flow('1', 2, '1r1a1i')
 
     # python3 MainExecution.py 1 2 1r1a1i
     # python3 MainExecution.py 2 2 1r1a1c

@@ -1,3 +1,4 @@
+import logging
 import time
 from datetime import date
 
@@ -63,86 +64,95 @@ class PassengerPage:
 
     def fill_extra_information(self):
         data = self.mockaroo.GetNetNFFPassengersData()
-
-        if self.IsAvailabilityMessageInPage() is False:
-            self.FillFormExtra()
-            self.FillEmail(data['Email'])
-            self.FillPhone(data['Phone'])
-            self.ClickCheckBox()
-            return True
-        else:
+        try:
+            if self.IsAvailabilityMessageInPage() is False:
+                self.FillFormExtra()
+                self.FillEmail(data['Email'])
+                self.FillPhone(data['Phone'])
+                self.ClickCheckBox()
+                return True
+            else:
+                self.context.repetitions = self.context.repetitions + 1
+                return False
+        except:
             self.context.repetitions = self.context.repetitions + 1
+            logging.error("No fue posible registrar información extra, el código de flujo es:" + self.context.code_flow)
             return False
 
     def fill_passenger_information(self, occupancy):
         """Registra los pasajeros en el formulario dependiendo del occupancy.
         :return:
         """
-        data = self.mockaroo.GetNetNFFPassengersData()
+        try:
+            data = self.mockaroo.GetNetNFFPassengersData()
 
-        if occupancy == '1r1a' and self.IsAvailabilityMessageInPage() is False:
-            self.FillPassenger1r1a()
-            self.FillEmail(data['Email'])
-            self.FillPhone(data['Phone'])
+            if occupancy == '1r1a' and self.IsAvailabilityMessageInPage() is False:
+                self.FillPassenger1r1a()
+                self.FillEmail(data['Email'])
+                self.FillPhone(data['Phone'])
 
-            self.ClickCheckBox()
-            return True
-        elif occupancy == '1r1a1i' and self.IsAvailabilityMessageInPage() is False:
-            self.FillPassenger1r1a1i()
-            self.FillEmail(data['Email'])
-            self.FillPhone(data['Phone'])
-            self.ClickCheckBox()
-            return True
-        elif occupancy == '1r1a1c' and self.IsAvailabilityMessageInPage() is False:
-            self.FillPassenger1r1a1c()
-            self.FillEmail(data['Email'])
-            self.FillPhone(data['Phone'])
-            self.ClickCheckBox()
-            return True
-        elif occupancy == '1r2a2c' and self.IsAvailabilityMessageInPage() is False:
-            self.FillPassenger1r2a2c()
-            self.FillEmail(data['Email'])
-            self.FillPhone(data['Phone'])
-            self.ClickCheckBox()
-            return True
-        elif occupancy == '1r2a1c' and self.IsAvailabilityMessageInPage() is False:
-            self.FillPassenger1r2a1c()
-            self.FillEmail(data['Email'])
-            self.FillPhone(data['Phone'])
-            self.ClickCheckBox()
-            return True
-        elif occupancy == '1r2a_2r2a' and self.IsAvailabilityMessageInPage() is False:
-            self.FillPassenger1r2a2r2a()
-            self.FillEmail(data['Email'])
-            self.FillPhone(data['Phone'])
-            self.ClickCheckBox()
-            return True
-        elif occupancy == '1r3a_2r4a' and self.IsAvailabilityMessageInPage() is False:
-            self.FillPassenger1r3a2r4a()
-            self.FillEmail(data['Email'])
-            self.FillPhone(data['Phone'])
-            self.ClickCheckBox()
-            return True
-        elif occupancy == '1r2a1i_2r2a1c' and self.IsAvailabilityMessageInPage() is False:
-            self.FillPassenger1r2a1i2r2a1c()
-            self.FillEmail(data['Email'])
-            self.FillPhone(data['Phone'])
-            self.ClickCheckBox()
-            return True
-        elif occupancy == '1r1a_2r2a1c_1' and self.IsAvailabilityMessageInPage() is False:
-            self.FillPassenger1r1a2r2a1c1()
-            self.FillEmail(data['Email'])
-            self.FillPhone(data['Phone'])
-            self.ClickCheckBox()
-            return True
-        elif occupancy == '1r1a_2r2a1c_2' and self.IsAvailabilityMessageInPage() is False:
-            self.FillPassenger1r1a2r2a1c2()
-            self.FillEmail(data['Email'])
-            self.FillPhone(data['Phone'])
-            self.ClickCheckBox()
-            return True
-        else:
+                self.ClickCheckBox()
+                return True
+            elif occupancy == '1r1a1i' and self.IsAvailabilityMessageInPage() is False:
+                self.FillPassenger1r1a1i()
+                self.FillEmail(data['Email'])
+                self.FillPhone(data['Phone'])
+                self.ClickCheckBox()
+                return True
+            elif occupancy == '1r1a1c' and self.IsAvailabilityMessageInPage() is False:
+                self.FillPassenger1r1a1c()
+                self.FillEmail(data['Email'])
+                self.FillPhone(data['Phone'])
+                self.ClickCheckBox()
+                return True
+            elif occupancy == '1r2a2c' and self.IsAvailabilityMessageInPage() is False:
+                self.FillPassenger1r2a2c()
+                self.FillEmail(data['Email'])
+                self.FillPhone(data['Phone'])
+                self.ClickCheckBox()
+                return True
+            elif occupancy == '1r2a1c' and self.IsAvailabilityMessageInPage() is False:
+                self.FillPassenger1r2a1c()
+                self.FillEmail(data['Email'])
+                self.FillPhone(data['Phone'])
+                self.ClickCheckBox()
+                return True
+            elif occupancy == '1r2a_2r2a' and self.IsAvailabilityMessageInPage() is False:
+                self.FillPassenger1r2a2r2a()
+                self.FillEmail(data['Email'])
+                self.FillPhone(data['Phone'])
+                self.ClickCheckBox()
+                return True
+            elif occupancy == '1r3a_2r4a' and self.IsAvailabilityMessageInPage() is False:
+                self.FillPassenger1r3a2r4a()
+                self.FillEmail(data['Email'])
+                self.FillPhone(data['Phone'])
+                self.ClickCheckBox()
+                return True
+            elif occupancy == '1r2a1i_2r2a1c' and self.IsAvailabilityMessageInPage() is False:
+                self.FillPassenger1r2a1i2r2a1c()
+                self.FillEmail(data['Email'])
+                self.FillPhone(data['Phone'])
+                self.ClickCheckBox()
+                return True
+            elif occupancy == '1r1a_2r2a1c_1' and self.IsAvailabilityMessageInPage() is False:
+                self.FillPassenger1r1a2r2a1c1()
+                self.FillEmail(data['Email'])
+                self.FillPhone(data['Phone'])
+                self.ClickCheckBox()
+                return True
+            elif occupancy == '1r1a_2r2a1c_2' and self.IsAvailabilityMessageInPage() is False:
+                self.FillPassenger1r1a2r2a1c2()
+                self.FillEmail(data['Email'])
+                self.FillPhone(data['Phone'])
+                self.ClickCheckBox()
+                return True
+            else:
+                self.context.repetitions = self.context.repetitions + 1
+                return False
+        except:
             self.context.repetitions = self.context.repetitions + 1
+            logging.error("No fue posible registrar pasajeros, el código de flujo es:" + self.context.code_flow)
             return False
 
     def FillPassenger1r1a(self):
@@ -500,4 +510,6 @@ class PassengerPage:
             extensions.ExecuteJs(self.context, "copyFirstPassengerToDriver()".format())
             return True
         except:
+            self.context.repetitions = self.context.repetitions + 1
+            logging.error("No fue posible copiar información del conductor, el código de flujo es:" + self.context.code_flow)
             return False

@@ -4,6 +4,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from Extensions.WebDriverExtensions import WebDriverExtensions
 from selenium.webdriver.support.ui import Select
+import logging
 
 
 class ResultPage:
@@ -21,16 +22,27 @@ class ResultPage:
         self.context = context
 
     def select_flight(self, flight):
-        extensions = WebDriverExtensions()
-        WebDriverWait(self.context, 50).until(
-            EC.visibility_of_all_elements_located(self.RESULTPAGE_FLIGHT_OPTION))
-        extensions.ExecuteJs(self.context, "selectAir('Air_{}')".format(str(flight)))
+        try:
+            extensions = WebDriverExtensions()
+            WebDriverWait(self.context, 50).until(
+                EC.visibility_of_all_elements_located(self.RESULTPAGE_FLIGHT_OPTION))
+            extensions.ExecuteJs(self.context, "selectAir('Air_{}')".format(str(flight)))
+            return True
+        except:
+            self.context.repetitions = self.context.repetitions + 1
+            logging.error("No hay vuelos en la página de resultados, el código de flujo es:" + self.context.code_flow)
+            return False
 
     def select_hotel(self, hotel):
-        extensions = WebDriverExtensions()
-        WebDriverWait(self.context, 50).until(
-            EC.visibility_of_all_elements_located(self.RESULTPAGE_HOTEL_OPTION))
-        extensions.ExecuteJs(self.context, "selectHotel('Hot_{}');".format(str(hotel)))
+        try:
+            extensions = WebDriverExtensions()
+            WebDriverWait(self.context, 50).until(
+                EC.visibility_of_all_elements_located(self.RESULTPAGE_HOTEL_OPTION))
+            extensions.ExecuteJs(self.context, "selectHotel('Hot_{}');".format(str(hotel)))
+        except:
+            self.context.repetitions = self.context.repetitions + 1
+            logging.error("No hay hoteles en la página de resultados, el código de flujo es:" + self.context.code_flow)
+            return False
 
     def select_auto(self, car):
         extensions = WebDriverExtensions()
@@ -60,7 +72,7 @@ class ResultPage:
             WebDriverWait(self.context, 50).until(
                 EC.visibility_of_all_elements_located(self.RESULTPAGE_CAR_CONTENT))
         except:
-            print('No tiene página de autos')
+            print('No tiene página de extras')
 
     def rent_car(self):
         extensions = WebDriverExtensions()
