@@ -2,17 +2,22 @@ from selenium import webdriver
 from Steps.ExecuteFlows import ExecuteFlows
 import sys
 import logging
+import os
 
 
 class MainExecution:
 
     def __init__(self):
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname + "", 'Extensions/utilities/chromedriver.exe')
+
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
         options.add_argument("--log-level=3")
-        self.context = webdriver.Chrome(executable_path=r'C:\chromedriver_win32\chromedriver.exe', options=options)
+        self.context = webdriver.Chrome(executable_path=filename, options=options)
+
         # Descomentar para seguimiento con navegador y comentar lo de arriba
-        # self.context = webdriver.Chrome(executable_path=r'C:\chromedriver_win32\chromedriver.exe')
+        # self.context = webdriver.Chrome(executable_path=filename)
         self.context.repetitions = 0
         logging.basicConfig(filename='flaska.log', level=logging.ERROR)
 
@@ -47,7 +52,7 @@ if __name__ == '__main__':
     print("ocupación = " + occupancy)
     main_execution.choose_flow(str(type_request), int(repetitions), str(occupancy))
     # Descomentar para seguimiento con navegador y comentar lo de arriba
-    # main_execution.choose_flow('1', 2, '1r1a1i')
+    # main_execution.choose_flow('8', 2, '1r2a1c')
 
     # python3 MainExecution.py 1 2 1r1a1i
     # python3 MainExecution.py 2 2 1r1a1c

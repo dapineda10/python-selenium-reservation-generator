@@ -13,6 +13,7 @@ class CarsDetailsPage:
 
     def select_option_car(self):
         extensions = WebDriverExtensions()
-        WebDriverWait(self.context, 50).until(
-            EC.visibility_of_all_elements_located(self.RESULTPAGE_BUY_NOW))
+        WebDriverWait(self.context, 30).until(
+            EC.presence_of_element_located(self.RESULTPAGE_BUY_NOW))
         extensions.ExecuteJs(self.context, "VehicleController.selectCarRate()".format())
+        print("eligió el auto")

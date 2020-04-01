@@ -109,6 +109,7 @@ class ExecuteFlows:
         :param type_request:La solicitud configurada en el MainExecution.
         :return:
         """
+        global url
         checkin = datetime.datetime.now() + datetime.timedelta(days=int(30))
         initial_date = str(checkin.date().year) + '-' + str(checkin.date().month) + '-' + str(
             checkin.date().day)
@@ -120,56 +121,79 @@ class ExecuteFlows:
             self.context.get(
                 "https://testing.netactica.net/es-CO/Air/OW/BOG/MDE/{}/1/0/1/NA/NA/NA/NA/NA/false/false/autom#air".format(
                     initial_date))
+            url = "https://testing.netactica.net/es-CO/Air/OW/BOG/MDE/{}/1/0/1/NA/NA/NA/NA/NA/false/false/autom#air".format(
+                initial_date)
         # 2- domestic_rt BOG - MDE 1r1a1c
         elif type_request == '2':
             self.context.get(
                 "https://testing.netactica.net/es-CO/Air/RT/BOG/MDE/{}/{}/1/1/0/NA/NA/NA/NA/NA/false/false/autom#air".format(
                     initial_date, final_date))
+            url = "https://testing.netactica.net/es-CO/Air/RT/BOG/MDE/{}/{}/1/1/0/NA/NA/NA/NA/NA/false/false/autom#air".format(
+                initial_date, final_date)
         # 3- international_rt BOG - MIA 1r1a1i
         elif type_request == '3':
             self.context.get(
                 "https://testing.netactica.net/es-CO/Air/OW/BOG/MIA/{}/1/0/1/NA/NA/NA/NA/NA/false/false/autom#air".format(
                     initial_date))
+            url = "https://testing.netactica.net/es-CO/Air/OW/BOG/MIA/{}/1/0/1/NA/NA/NA/NA/NA/false/false/autom#air".format(
+                initial_date)
         # 4- international_ow BOG - MIA 1r1a1c
         elif type_request == '4':
             self.context.get(
                 "https://testing.netactica.net/es-CO/Air/RT/BOG/MIA/{}/{}/1/1/0/NA/NA/NA/NA/NA/false/false/autom#air".format(
                     initial_date, final_date))
+            url = "https://testing.netactica.net/es-CO/Air/RT/BOG/MIA/{}/{}/1/1/0/NA/NA/NA/NA/NA/false/false/autom#air".format(
+                initial_date, final_date)
         # 5 - package BOG-MED 1r1a
         elif type_request == '5':
             self.context.get(
                 "https://testing.netactica.net/es-CO/Package/BOG/MDE/{}/{}/1/0/0/{}/{}/1$0/false/false/NA/NA/NA/autom#air".format(
                     initial_date, final_date, initial_date, final_date))
+            url = "https://testing.netactica.net/es-CO/Package/BOG/MDE/{}/{}/1/0/0/{}/{}/1$0/false/false/NA/NA/NA/autom#air".format(
+                initial_date, final_date, initial_date, final_date)
         # 6 - hotel_domestic
         elif type_request == '6':
             self.context.get(
                 "https://testing.netactica.net/es-CO/Hotel/BOG/{}/{}/1$0/NA/autom#hotel".format(
                     initial_date, final_date))
+            url = "https://testing.netactica.net/es-CO/Hotel/BOG/{}/{}/1$0/NA/autom#hotel".format(
+                initial_date, final_date)
         # 7 - hotel_international
         elif type_request == '7':
             self.context.get(
                 "https://testing.netactica.net/es-CO/Hotel/MIA/{}/{}/1!2-6/NA/autom#hotel".format(
                     initial_date, final_date))
+            url = "https://testing.netactica.net/es-CO/Hotel/MIA/{}/{}/1!2-6/NA/autom#hotel".format(
+                initial_date, final_date)
         # 8 - air_auto_international
         elif type_request == '8':
             self.context.get(
                 "https://testing.netactica.net/es-CO/AirCar//BOG/MIA/{}/{}/2/1/0/NA/NA/NA/NA/NA/false/false/autom#air".format(
                     initial_date, final_date))
+            url = "https://testing.netactica.net/es-CO/AirCar//BOG/MIA/{}/{}/2/1/0/NA/NA/NA/NA/NA/false/false/autom#air".format(
+                initial_date, final_date)
         # 9 - international_package 1r1a
         elif type_request == '9':
             self.context.get(
                 "https://testing.netactica.net/es-CO/Package/BOG/MIA/{}/{}/3/1/0/{}/{}/1$0!2-5$0/false/false/NA/NA/NA/autom#air".format(
                     initial_date, final_date, initial_date, final_date))
+            url = "https://testing.netactica.net/es-CO/Package/BOG/MIA/{}/{}/3/1/0/{}/{}/1$0!2-5$0/false/false/NA/NA/NA/autom#air".format(
+                initial_date, final_date, initial_date, final_date)
         # 10 autos_international
         elif type_request == '10':
             self.context.get(
                 "https://testing.netactica.net/es-CO/Car/MIA/{}/1000/MIA/{}/1000/NA/NA/NA/autom#car".format(
                     initial_date, final_date))
+            url = "https://testing.netactica.net/es-CO/Car/MIA/{}/1000/MIA/{}/1000/NA/NA/NA/autom#car".format(
+                initial_date, final_date)
         # 11 extras nacional
         elif type_request == '11':
             self.context.get(
                 "https://testing.netactica.net/es-CO/Extras/BOG/NA/{}/{}/autom#extra".format(
                     initial_date, final_date))
+            url = "https://testing.netactica.net/es-CO/Extras/BOG/NA/{}/{}/autom#extra".format(
+                initial_date, final_date)
+        print(url)
 
     def insert_in_database(self, type_request, occupancy):
         try:
@@ -331,7 +355,7 @@ class ExecuteFlows:
             if flight_status:
                 result_page.select_auto(self.context.repetitions)
                 car_details_page.select_option_car()
-                self.skip_additional_services()
+                self.skip_extras()
                 status = passenger_page.fill_passenger_information(occupancy)
                 status_driver = passenger_page.fill_driver()
 
